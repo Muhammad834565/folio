@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Tiptap / ProseMirror editor styles ── */
+.ProseMirror {
+  outline: none;
+  min-height: 500px;
+  padding: 1.5rem;
+}
+.ProseMirror > * + * { margin-top: 0.75em; }
+.ProseMirror ul  { list-style: disc outside;    padding-left: 1.5rem; }
+.ProseMirror ol  { list-style: decimal outside; padding-left: 1.5rem; }
+.ProseMirror h1 { font-size: 2rem;    font-weight: 700; line-height: 1.2; }
+.ProseMirror h2 { font-size: 1.5rem;  font-weight: 700; line-height: 1.2; }
+.ProseMirror h3 { font-size: 1.25rem; font-weight: 600; line-height: 1.2; }
+.ProseMirror blockquote {
+  border-left: 3px solid #6366f1;
+  padding-left: 1rem;
+  color: #6b7280;
+  font-style: italic;
+}
+.ProseMirror code {
+  background: #f3f4f6;
+  border-radius: 0.25rem;
+  padding: 0.1em 0.3em;
+  font-size: 0.875em;
+}
+
+/* ── Print styles for PDF export ── */
+@media print {
+  .no-print { display: none !important; }
+  body { background: white !important; }
+  .print-area {
+    position: fixed !important;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 9999;
+    background: white;
+    padding: 2rem;
+    overflow: auto;
+  }
+}
+
+/* ── Landing page gradient animation ── */
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-x 6s ease infinite;
+}
+
+/* ── Floating card hover ── */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.15);
+}

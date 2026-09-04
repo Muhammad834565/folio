@@ -1,0 +1,111 @@
+"use client"
+
+import { useEditor, EditorContent, Editor as TiptapEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Underline from '@tiptap/extension-underline'
+import { Bold, Italic, Underline as UnderlineIcon, Heading1, Heading2, List, ListOrdered } from 'lucide-react'
+import { useEffect } from 'react'
+
+const MenuBar = ({ editor }: { editor: TiptapEditor | null }) => {
+  if (!editor) return null
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 p-2 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+      <button
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        disabled={!editor.can().chain().focus().toggleBold().run()}
+        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('bold') ? 'bg-gray-200 text-indigo-600' : 'text-gray-600'}`}
+        title="Bold"
+      >
+        <Bold className="w-4 h-4" />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        disabled={!editor.can().chain().focus().toggleItalic().run()}
+        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('italic') ? 'bg-gray-200 text-indigo-600' : 'text-gray-600'}`}
+        title="Italic"
+      >
+        <Italic className="w-4 h-4" />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleUnderline().run()}
+        disabled={!editor.can().chain().focus().toggleUnderline().run()}
+        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('underline') ? 'bg-gray-200 text-indigo-600' : 'text-gray-600'}`}
+        title="Underline"
+      >
+        <UnderlineIcon className="w-4 h-4" />
+      </button>
+      
+      <div className="w-px h-6 bg-gray-300 mx-1"></div>
+      
+      <button
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-200 text-indigo-600' : 'text-gray-600'}`}
+        title="Heading 1"
+      >
+        <Heading1 className="w-4 h-4" />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-200 text-indigo-600' : 'text-gray-600'}`}
+        title="Heading 2"
+      >
+        <Heading2 className="w-4 h-4" />
+      </button>
+      
+      <div className="w-px h-6 bg-gray-300 mx-1"></div>
+      
+      <button
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('bulletList') ? 'bg-gray-200 text-indigo-600' : 'text-gray-600'}`}
+        title="Bullet List"
+      >
+        <List className="w-4 h-4" />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('orderedList') ? 'bg-gray-200 text-indigo-600' : 'text-gray-600'}`}
+        title="Ordered List"
+      >
+        <ListOrdered className="w-4 h-4" />
+      </button>
+    </div>
+  )
+}
+
+export default function Editor({ 
+  content, 
+  onUpdate 
+}: { 
+  content: string, 
+  onUpdate: (html: string) => void 
+}) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Underline,
+    ],
+    content,
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none p-4 min-h-[500px] bg-white',
+      },
+    },
+    onUpdate: ({ editor }) => {
+      onUpdate(editor.getHTML())
+    },
+  })
+
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content)
+    }
+  }, [content, editor])
+
+  return (
+    <div className="border border-gray-300 rounded-lg shadow-sm bg-white overflow-hidden">
+      <MenuBar editor={editor} />
+      <EditorContent editor={editor} />
+    </div>
+  )
+}
