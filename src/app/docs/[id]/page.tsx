@@ -25,6 +25,7 @@ export default function DocumentPage() {
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const initialLoadRef = useRef(true)
   const titleRef = useRef(title)
+  const lastValidTitleRef = useRef('')
   const contentRef = useRef(content)
 
   // Keep refs in sync
@@ -44,6 +45,7 @@ export default function DocumentPage() {
       })
       .then(data => {
         setTitle(data.title)
+        lastValidTitleRef.current = data.title
         setContent(data.content)
         setIsOwner(data.ownerId === user.id)
         setLoading(false)
@@ -79,6 +81,19 @@ export default function DocumentPage() {
     const v = e.target.value
     setTitle(v)
     scheduleSave(v, contentRef.current)
+  }
+
+  const commitTitle = () => {
+    const nextTitle = title.trim()
+    if (!nextTitle) {
+      setTitle(lastValidTitleRef.current)
+      titleRef.current = lastValidTitleRef.current
+      return
+    }
+    setTitle(nextTitle)
+    titleRef.current = nextTitle
+    lastValidTitleRef.current = nextTitle
+    scheduleSave(nextTitle, contentRef.current)
   }
 
   const handleContentUpdate = (html: string) => {
@@ -138,11 +153,19 @@ export default function DocumentPage() {
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <input
+              aria-label="Document name"
               type="text"
               value={title}
               onChange={handleTitleChange}
+              onBlur={commitTitle}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.currentTarget.blur()
+                }
+              }}
+              readOnly={!isOwner}
               placeholder="Document Title"
-              className="text-xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-0 placeholder-gray-300 min-w-0 flex-1"
+              className={`text-xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-0 placeholder-gray-300 min-w-0 flex-1 ${isOwner ? '' : 'cursor-default'}`}
             />
           </div>
 

@@ -53,9 +53,18 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     const { title, content } = await request.json()
 
+    if (!isOwner && title !== doc.title) {
+      return NextResponse.json({ error: 'Forbidden. Only owner can rename.' }, { status: 403 })
+    }
+
+    const nextTitle = typeof title === 'string' ? title.trim() : doc.title
+    if (!nextTitle) {
+      return NextResponse.json({ error: 'Document name cannot be empty.' }, { status: 400 })
+    }
+
     const updatedDoc = await prisma.document.update({
       where: { id: params.id },
-      data: { title, content }
+      data: { title: nextTitle, content }
     })
 
     return NextResponse.json(updatedDoc)
